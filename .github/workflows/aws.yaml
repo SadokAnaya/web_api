@@ -1,4 +1,4 @@
-name: Bulid and  push to aws
+name: Build and push to aws
 
 on:
   push:
@@ -11,16 +11,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup dotnet
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '10.0.x'
 
-      - name: Build project
-        run: dotnet restore; dotnet publish -o site;
+      - name: Restore & Publish
+        run: |
+          dotnet restore
+          dotnet publish -c Release -o site
 
-      - name: create zip package
-        run: cd site; zip ../site.zip *;
+      - name: Create zip package
+        run: |
+          cd site
+          zip -r ../site.zip .
 
       - name: Deploy to aws EB
         uses: einaregilsson/beanstalk-deploy@v21
@@ -28,8 +33,9 @@ jobs:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           region: eu-north-1
-          application_name: calculator API
+          application_name: "calculator API"
           environment_name: CalculatorAPI-env
-          version_label: ${ { github.run_id } }
+          version_label: ${{ github.run_id }}
           deployment_package: site.zip
+
         
