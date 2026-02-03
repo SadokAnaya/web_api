@@ -19,8 +19,8 @@ jobs:
 
       - name: Restore & Publish
         run: |
-          dotnet restore
-          dotnet publish -c Release -o site
+          dotnet restore ./calculatorApi.csproj
+          dotnet publish ./calculatorApi.csproj -c Release -o site
 
       - name: Create zip package
         run: |
